@@ -1,0 +1,52 @@
+# Vorlage für einen systemd-Dienst, der KrisNote dauerhaft im Hintergrund
+# laufen lässt und nach einem Server-Neustart automatisch wieder startet.
+#
+# Einrichtung:
+#   1. Diese Datei kopieren und die Platzhalter (<...>) anpassen:
+#        sudo cp deploy/krisnote.service /etc/systemd/system/krisnote.service
+#        sudo nano /etc/systemd/system/krisnote.service
+#   2. Danach:
+#        sudo systemctl daemon-reload
+#        sudo systemctl enable --now krisnote
+#   3. Log ansehen (z. B. für den Einrichtungscode beim ersten Start):
+#        journalctl -u krisnote -f
+#
+# Alle Environment=-Zeilen sind optional - ohne sie gelten die in der
+# README dokumentierten Standardwerte. Nicht benötigte Zeilen einfach
+# löschen oder mit "#" auskommentieren.
+
+[Unit]
+Description=KrisNote (selbst gehostete Notizen-App)
+After=network.target
+
+[Service]
+Type=simple
+
+# Linux-Benutzer, unter dem der Server laufen soll (kein root empfohlen).
+User=<BENUTZERNAME>
+
+# Pfad zum server/-Unterordner des geklonten Repositorys.
+WorkingDirectory=/pfad/zu/KrisNote/server
+
+# "env node" findet node über den PATH des Benutzers oben - funktioniert in
+# den meisten Fällen. Falls systemd "node" nicht findet, stattdessen den
+# absoluten Pfad eintragen (mit "which node" ermitteln), z. B.
+# ExecStart=/usr/bin/node server.js
+ExecStart=/usr/bin/env node server.js
+
+Restart=on-failure
+RestartSec=5
+
+# --- Optionale Einstellungen (siehe README, Abschnitt "Einstellungen per
+#     Umgebungsvariable") ---
+# Environment=PORT=3000
+# Environment=DATA_DIR=/pfad/zu/KrisNote/data
+# Environment=ALLOW_REGISTRATION=true
+# Environment=SETUP_CODE=eigenerFesterCode
+# Environment=PYTHON_BIN=/pfad/zu/venv/bin/python3
+# Environment=HF_TOKEN=hf_xxx
+# Environment=WHISPER_MODEL=medium
+# Environment=TRANSCRIBE_LANGUAGE=de
+
+[Install]
+WantedBy=multi-user.target
