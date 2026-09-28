@@ -305,100 +305,27 @@ app.post('/api/change-password-public', (req, res) => {
 
 // ---------- Neuen Benutzer anlegen (öffentlich erreichbar - siehe login.html) ----------
 //
-// Jeder neue Benutzer bekommt einen eigenen, leeren Notizbereich - mit einer
-// Ausnahme: die Seite/Unterseiten "Erklärung KrisNote" (bzw. der gleichnamige
-// Ordner) werden vom ältesten bestehenden Benutzer, bei dem sie gefunden
-// werden, als einmalige Kopie mitgegeben, inklusive der darin verwendeten
-// Bilder/PDFs/Aufnahmen. Spätere Änderungen an der Erklärung wirken sich
-// nicht rückwirkend auf schon registrierte Benutzer aus (echte, unabhängige
-// Kopie, kein geteilter Inhalt).
+// Jeder neue Benutzer bekommt einen eigenen, leeren Notizbereich - plus eine
+// eigene, unabhängige Kopie der "Erklärung KrisNote" (siehe server/seed/).
+// Der Inhalt ist fest im Code hinterlegt (nicht von einem anderen Benutzer
+// kopiert) - funktioniert dadurch auch beim allerersten Benutzer einer
+// frischen Installation, wo es noch niemanden gäbe, von dem man kopieren
+// könnte. Spätere Änderungen an der Erklärung eines Benutzers wirken sich
+// nie auf andere (schon vorhandene oder zukünftige) Benutzer aus.
 const USERNAME_PATTERN = /^[a-zA-Z0-9_.-]{3,30}$/;
-
-function collectReferencedFilenames(notes) {
-  const json = JSON.stringify(notes);
-  const matches = json.match(/\/files\/[A-Za-z0-9_.-]+/g) || [];
-  return [...new Set(matches.map((m) => path.basename(m)))];
-}
-
-function findErklaerungTemplate() {
-  const users = [...userStore.readUsers()].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-  for (const user of users) {
-    const stateFile = userStateFile(user.username);
-    let parsed;
-    try {
-      parsed = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
-    } catch (err) {
-      continue;
-    }
-    if (!parsed || !Array.isArray(parsed.notes)) continue;
-    const folders = Array.isArray(parsed.folders) ? parsed.folders : [];
-
-    // Fall A: eigener Ordner namens "Erklärung KrisNote".
-    const folder = folders.find((f) => f.name === 'Erklärung KrisNote');
-    if (folder) {
-      const notes = parsed.notes.filter((n) => n.folderId === folder.id);
-      if (notes.length) {
-        return { sourceUsername: user.username, folder: { ...folder }, notes: notes.map((n) => ({ ...n })) };
-      }
-    }
-
-    // Fall B: Hauptseite "Erklärung KrisNote" mit Unterseiten (parentNoteId-Kette).
-    const rootNote = parsed.notes.find((n) => !n.parentNoteId && n.title === 'Erklärung KrisNote');
-    if (rootNote) {
-      const collected = [rootNote];
-      let changed = true;
-      while (changed) {
-        changed = false;
-        for (const n of parsed.notes) {
-          if (collected.some((c) => c.id === n.id)) continue;
-          if (n.parentNoteId && collected.some((c) => c.id === n.parentNoteId)) {
-            collected.push(n);
-            changed = true;
-          }
-        }
-      }
-      return { sourceUsername: user.username, folder: null, notes: collected.map((n) => ({ ...n })) };
-    }
-  }
-  return null;
-}
+const { buildErklaerungKrisNoteSeed } = require('./seed/erklaerung-krisnote');
 
 function seedNewUserState(username) {
   fs.mkdirSync(userDir(username), { recursive: true });
   fs.mkdirSync(userFilesDir(username), { recursive: true });
 
-  const template = findErklaerungTemplate();
-  let state;
-  if (template) {
-    state = { folders: template.folder ? [template.folder] : [], notes: template.notes };
-    const sourceFilesDir = userFilesDir(template.sourceUsername);
-    for (const filename of collectReferencedFilenames(template.notes)) {
-      try {
-        fs.copyFileSync(path.join(sourceFilesDir, filename), path.join(userFilesDir(username), filename));
-      } catch (err) {
-        console.warn(`Datei "${filename}" der Erklärung konnte nicht für "${username}" übernommen werden:`, err.message);
-      }
-    }
-  } else {
-    // Noch keine Erklärung gefunden (z. B. ganz frische Installation) -
-    // normale Willkommens-Notiz als Rückfallebene.
-    const now = Date.now();
-    state = {
-      folders: [],
-      notes: [{
-        id: crypto.randomUUID(),
-        title: 'Willkommen bei KrisNote',
-        objects: [],
-        ink: { strokes: [] },
-        background: 'dots',
-        folderId: null,
-        parentNoteId: null,
-        order: 0,
-        createdAt: now,
-        updatedAt: now,
-      }],
-    };
-  }
+  const logoFilename = `${crypto.randomUUID()}.png`;
+  fs.copyFileSync(
+    path.join(PROJECT_ROOT, 'icons', 'sidebar-logo.png'),
+    path.join(userFilesDir(username), logoFilename)
+  );
+  const { folder, notes } = buildErklaerungKrisNoteSeed(logoFilename);
+  const state = { folders: [folder], notes };
   fs.writeFileSync(userStateFile(username), JSON.stringify(state));
 }
 
