@@ -29,13 +29,27 @@ alle Daten bleiben bei dir.
 
 ## Installation
 
+**Am einfachsten: Installations-Skript** (Debian/Ubuntu, als root). Installiert
+Node.js falls nötig, klont das Repository nach `/opt/krisnote`, führt
+`npm install` aus und richtet KrisNote gleich als systemd-Dienst ein (läuft
+danach dauerhaft, auch nach einem Server-Neustart):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/KrisamAnton/KrisNote/main/install.sh | bash
+```
+
+Zielordner und Dienst-Benutzer lassen sich davor per Umgebungsvariable
+anpassen, z. B. `INSTALL_DIR=/srv/krisnote bash install.sh`.
+
+**Von Hand** (falls man mehr Kontrolle möchte, oder das Skript nicht passt):
+
 ```bash
 git clone <URL-dieses-Repositorys> KrisNote
 cd KrisNote/server
 npm install
 ```
 
-**Dauerhaft als Dienst starten (systemd):** Im Ordner `deploy/` liegt eine
+Dauerhaft als Dienst starten (systemd): Im Ordner `deploy/` liegt eine
 Vorlage-Datei (`krisnote.service`). Sie kopieren, die Platzhalter (Pfad,
 Benutzername) anpassen und einrichten:
 
@@ -48,7 +62,7 @@ sudo systemctl enable --now krisnote
 
 Die Vorlage-Datei selbst enthält weitere Erklärungen als Kommentare.
 
-**Alternativ, nur zum Ausprobieren** (läuft, bis das Terminal-Fenster
+**Nur zum kurzen Ausprobieren** (läuft, bis das Terminal-Fenster
 geschlossen wird):
 
 ```bash
