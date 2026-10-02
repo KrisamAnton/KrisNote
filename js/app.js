@@ -6354,9 +6354,9 @@
     if (el.searchInput.value) el.searchInput.value = '';
 
     state = await loadState();
-    // Der Name unten in der Seitenleiste stand bisher fest im HTML ("Anton
-    // Krisam") - seit mehrere Benutzer-Konten möglich sind, muss hier der
-    // tatsächlich angemeldete Benutzer stehen.
+    // Der Name unten in der Seitenleiste stand früher fest im HTML. Da es
+    // inzwischen mehrere Benutzer-Konten gibt, muss hier der tatsächlich
+    // angemeldete Benutzer stehen.
     try {
       const meRes = await fetch('/api/me');
       if (meRes.ok) {
@@ -6880,7 +6880,7 @@
       }
     });
 
-    // Edge setzt seinen Autofill-Vorschlag ("anton", der zuletzt angemeldete
+    // Edge setzt seinen Autofill-Vorschlag (z. B. der zuletzt angemeldete
     // Benutzername) offenbar bei ganz unterschiedlichen, nicht vorhersagbaren
     // Gelegenheiten ein (beim Fokussieren des Feldes, aber auch beim Klicken
     // irgendwo sonst auf der Seite) - und löst dabei ein ganz normales

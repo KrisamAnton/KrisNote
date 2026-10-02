@@ -3,8 +3,7 @@
 // Registrierung) automatisch als eigene, unabhängige Kopie bekommt - anders
 // als früher wird dafür NICHT mehr bei einem bereits bestehenden Benutzer
 // nach einer gleichnamigen Notiz gesucht (das schlug auf einer frischen
-// Installation ohne jeden anderen Benutzer fehl). Der Inhalt hier ist die
-// Original-Erklärung, die Anton Krisam für neue Benutzer geschrieben hat.
+// Installation ohne jeden anderen Benutzer fehl).
 const crypto = require('crypto');
 
 function htmlToPlainText(html) {
