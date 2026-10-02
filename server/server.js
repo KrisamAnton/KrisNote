@@ -252,6 +252,15 @@ app.get('/api/version', (req, res) => {
   res.json({ version: APP_VERSION });
 });
 
+// Änderungsverlauf (CHANGELOG.md) für die schreibgeschützte Ansicht unter
+// Einstellungen - nur für angemeldete Benutzer (nicht in PUBLIC_PATHS).
+app.get('/api/changelog', (req, res) => {
+  fs.readFile(path.join(PROJECT_ROOT, 'CHANGELOG.md'), 'utf8', (err, text) => {
+    if (err) return res.status(404).json({ error: 'Kein Änderungsverlauf vorhanden' });
+    res.type('text/plain; charset=utf-8').send(text);
+  });
+});
+
 app.post('/api/logout', (req, res) => {
   const cookies = parseCookies(req);
   destroySession(cookies[SESSION_COOKIE_NAME]);

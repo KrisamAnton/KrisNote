@@ -390,6 +390,11 @@
     reminderSettingsModalBackdrop: document.getElementById('reminderSettingsModalBackdrop'),
     reminderSettingsModal: document.getElementById('reminderSettingsModal'),
     openChangePasswordBtn: document.getElementById('openChangePasswordBtn'),
+    openChangelogBtn: document.getElementById('openChangelogBtn'),
+    changelogModalBackdrop: document.getElementById('changelogModalBackdrop'),
+    changelogBody: document.getElementById('changelogBody'),
+    changelogCloseBtn: document.getElementById('changelogCloseBtn'),
+    sidebarVersion: document.getElementById('sidebarVersion'),
     changePasswordModalBackdrop: document.getElementById('changePasswordModalBackdrop'),
     changePasswordModal: document.getElementById('changePasswordModal'),
     currentPasswordInput: document.getElementById('currentPasswordInput'),
@@ -6550,6 +6555,67 @@
     el.changePasswordModalBackdrop.hidden = true;
   }
 
+  // Änderungsverlauf: schreibgeschützte Ansicht von CHANGELOG.md. Wird
+  // bewusst ohne innerHTML aufgebaut (nur textContent), damit der Inhalt der
+  // Datei nie als HTML ausgeführt werden kann. Unterstützt nur das, was in
+  // der Datei vorkommt: "## Überschrift", "- Listenpunkt" (mit
+  // eingerückten Folgezeilen) und einfache Absätze.
+  function renderChangelog(markdown) {
+    const body = el.changelogBody;
+    body.textContent = '';
+    let list = null;
+    let started = false;
+    for (const rawLine of markdown.split(/\r?\n/)) {
+      const line = rawLine.replace(/\s+$/, '');
+      if (line.startsWith('# ')) continue;
+      if (line.startsWith('## ')) {
+        started = true;
+        list = null;
+        const h = document.createElement('h3');
+        h.className = 'changelog-version';
+        h.textContent = line.slice(3).replace(/[[\]]/g, '');
+        body.appendChild(h);
+        continue;
+      }
+      if (!started) continue;
+      if (line.startsWith('- ')) {
+        if (!list) {
+          list = document.createElement('ul');
+          body.appendChild(list);
+        }
+        const li = document.createElement('li');
+        li.textContent = line.slice(2).replace(/\*\*/g, '');
+        list.appendChild(li);
+      } else if (/^\s+\S/.test(line) && list && list.lastChild) {
+        list.lastChild.textContent += ' ' + line.trim().replace(/\*\*/g, '');
+      } else if (line.trim() === '') {
+        list = null;
+      } else {
+        list = null;
+        const p = document.createElement('p');
+        p.textContent = line.replace(/\*\*/g, '');
+        body.appendChild(p);
+      }
+    }
+  }
+
+  async function openChangelogModal() {
+    closeSettingsPopover();
+    el.changelogBody.textContent = 'Wird geladen …';
+    el.changelogModalBackdrop.hidden = false;
+    try {
+      const res = await fetch('/api/changelog');
+      if (!res.ok) throw new Error('Laden fehlgeschlagen');
+      renderChangelog(await res.text());
+    } catch (err) {
+      el.changelogBody.textContent = 'Der Änderungsverlauf konnte nicht geladen werden.';
+    }
+  }
+
+  function closeChangelogModal() {
+    el.changelogModalBackdrop.hidden = true;
+  }
+
   async function saveNewPassword() {
     const currentPassword = el.currentPasswordInput.value;
     const newPassword = el.newPasswordInput.value;
@@ -6721,7 +6787,10 @@
       const versionRes = await fetch('/api/version');
       if (versionRes.ok) {
         const { version } = await versionRes.json();
-        if (version) el.settingsVersion.textContent = `KrisNote ${version}`;
+        if (version) {
+          el.settingsVersion.textContent = `KrisNote ${version}`;
+          el.sidebarVersion.textContent = `v${version}`;
+        }
       }
     } catch (e) {
       // Keine Versionsanzeige ist kein Grund, den Start der App zu blockieren.
@@ -6760,6 +6829,11 @@
     });
     el.settingsCancelBtn.addEventListener('click', closeReminderSettingsModal);
     el.settingsSaveBtn.addEventListener('click', saveReminderSettings);
+    el.openChangelogBtn.addEventListener('click', openChangelogModal);
+    el.changelogModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === el.changelogModalBackdrop) closeChangelogModal();
+    });
+    el.changelogCloseBtn.addEventListener('click', closeChangelogModal);
     el.openChangePasswordBtn.addEventListener('click', openChangePasswordModal);
     el.changePasswordModalBackdrop.addEventListener('click', (e) => {
       if (e.target === el.changePasswordModalBackdrop) closeChangePasswordModal();
