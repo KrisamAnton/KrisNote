@@ -18,6 +18,7 @@
   const ICONS = {
     allNotes: '<svg viewBox="0 0 20 20"><path d="M4 3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6.41a1 1 0 0 0-.29-.71l-2.41-2.41A1 1 0 0 0 13.59 3H4zm2 4h8v1.5H6V7zm0 3h8v1.5H6V10zm0 3h5v1.5H6V13z"/></svg>',
     folder: '<svg viewBox="0 0 20 20"><path d="M2 5.5C2 4.67 2.67 4 3.5 4h4.13c.36 0 .7.14.96.4l1.2 1.2c.26.26.6.4.96.4H16.5c.83 0 1.5.67 1.5 1.5v7.6c0 .83-.67 1.5-1.5 1.5h-13C2.67 16.6 2 15.93 2 15.1V5.5z"/></svg>',
+    frame: '<svg viewBox="0 0 20 20"><rect x="3" y="4.5" width="14" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
     trash: '<svg viewBox="0 0 20 20"><path d="M6 2.5h8l.5 1.5H16v1.5H4V4h1.5L6 2.5zM5 7h10l-.7 10.1c-.05.7-.63 1.4-1.5 1.4H7.2c-.87 0-1.45-.7-1.5-1.4L5 7z"/></svg>',
     link: '<svg viewBox="0 0 20 20"><rect x="1" y="7" width="9" height="4.5" rx="2.25" transform="rotate(-45 5.5 9.25)" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="8.5" width="9" height="4.5" rx="2.25" transform="rotate(-45 14 10.75)" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
     unlink: '<svg viewBox="0 0 20 20"><rect x="1" y="7" width="9" height="4.5" rx="2.25" transform="rotate(-45 5.5 9.25)" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="8.5" width="9" height="4.5" rx="2.25" transform="rotate(-45 14 10.75)" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="3" y1="17" x2="17" y2="3" stroke="currentColor" stroke-width="1.8"/></svg>',
@@ -71,6 +72,14 @@
     { hex: '#34c759', name: 'Grün' },
     { hex: '#ffcc00', name: 'Gelb' },
     { hex: '#6e6e73', name: 'Grau' },
+    { hex: '#ff2d92', name: 'Pink' },
+    { hex: '#5856d6', name: 'Indigo' },
+    { hex: '#5ac8fa', name: 'Himmelblau' },
+    { hex: '#30b0c7', name: 'Türkis' },
+    { hex: '#1f8a4c', name: 'Dunkelgrün' },
+    { hex: '#9acd32', name: 'Limette' },
+    { hex: '#a2845e', name: 'Braun' },
+    { hex: '#a2203a', name: 'Bordeaux' },
   ];
 
   // Echte Punktgrößen wie in Word/OneNote (Umrechnung 1pt = 1.333px), nicht
@@ -435,7 +444,6 @@
     popoverBackdrop: document.getElementById('popoverBackdrop'),
     movePopover: document.getElementById('movePopover'),
     movePopoverList: document.getElementById('movePopoverList'),
-    addTextBtn: document.getElementById('addTextBtn'),
     undoBtn: document.getElementById('undoBtn'),
     redoBtn: document.getElementById('redoBtn'),
     headingBtn: document.getElementById('headingBtn'),
@@ -456,8 +464,6 @@
     fontFamilyPopoverBackdrop: document.getElementById('fontFamilyPopoverBackdrop'),
     fontFamilyPopover: document.getElementById('fontFamilyPopover'),
     fontFamilyList: document.getElementById('fontFamilyList'),
-    textStylePopoverBackdrop: document.getElementById('textStylePopoverBackdrop'),
-    textStylePopover: document.getElementById('textStylePopover'),
     pdfModePopoverBackdrop: document.getElementById('pdfModePopoverBackdrop'),
     pdfModePopover: document.getElementById('pdfModePopover'),
     pdfInlineFileModeBtn: document.getElementById('pdfInlineFileModeBtn'),
@@ -511,6 +517,8 @@
     objectContextMenu: document.getElementById('objectContextMenu'),
     objectPasteBtn: document.getElementById('objectPasteBtn'),
     inkLayer: document.getElementById('inkLayer'),
+    inkLive: document.getElementById('inkLive'),
+    inkLivePath: document.getElementById('inkLivePath'),
     drawToolbar: document.getElementById('drawToolbar'),
     drawPenToolBtn: document.getElementById('drawPenToolBtn'),
     drawSelectToolBtn: document.getElementById('drawSelectToolBtn'),
@@ -848,6 +856,9 @@
         <button class="folder-color-dot" type="button" style="background:${folder.color || '#8e8e93'}" title="Ordnerfarbe ändern" aria-label="Ordnerfarbe ändern"></button>
         <input class="folder-name" value="${escapeHtml(folder.name)}" readonly />
         <span class="folder-count">${count}</span>
+        <button class="folder-rename" type="button" aria-label="Ordner umbenennen" title="Ordner umbenennen">
+          <svg viewBox="0 0 20 20" class="icon" style="width:18px;height:18px">${ICONS.rename}</svg>
+        </button>
         <button class="folder-delete" type="button" aria-label="Ordner löschen" title="Ordner löschen">
           <svg viewBox="0 0 20 20" class="icon" style="width:14px;height:14px">${ICONS.trash}</svg>
         </button>
@@ -862,9 +873,17 @@
         nameInput.focus();
         nameInput.select();
       }
+      // Nur auf Touch-Geräten sichtbar (siehe CSS): Dort springt schon das erste
+      // Antippen des Namens in die Notizliste, ein Doppeltipp zum Umbenennen ist
+      // daher nicht möglich. Der Stift-Knopf ist ein echter Klick - nur dabei
+      // zeigt der Browser zuverlässig die Tastatur an.
+      item.querySelector('.folder-rename').addEventListener('click', (e) => {
+        e.stopPropagation();
+        enterFolderRename();
+      });
       item.addEventListener('click', (e) => {
         if (e.target === nameInput && nameInput.readOnly === false) return;
-        if (e.target.closest('.folder-delete') || e.target.closest('.folder-color-dot')) return;
+        if (e.target.closest('.folder-delete') || e.target.closest('.folder-rename') || e.target.closest('.folder-color-dot')) return;
         if (e.target === nameInput || e.target.closest('.folder-name')) {
           const now = Date.now();
           if (lastFolderTapId === folder.id && now - lastFolderTapAt < 400) {
@@ -1512,7 +1531,7 @@
     clearStrokeSelection();
     selectedObjectId = null;
     for (const child of [...el.canvasSurface.children]) {
-      if (child !== el.inkLayer) child.remove();
+      if (child !== el.inkLayer && child !== el.inkLive) child.remove();
     }
     if (!note) {
       lastRenderedCanvasNoteId = undefined;
@@ -1528,6 +1547,7 @@
       el.canvasSurface.insertBefore(buildObjectEl(note, obj), el.inkLayer);
     }
     updateSurfaceSize(note, true);
+    scheduleInkWindowCheck();
     if (note.id !== lastRenderedCanvasNoteId) {
       el.canvasWorkspace.scrollLeft = 0;
       el.canvasWorkspace.scrollTop = 0;
@@ -1635,6 +1655,29 @@
     window.addEventListener('scroll', hide, true);
   }
 
+  // Schaltet bei einem Text den sichtbaren Rahmen (hinterlegtes "Textfeld") an
+  // oder aus ("freier Text"). Das Objekt wird dafür neu aufgebaut, weil sich
+  // einige Eigenschaften (Überlauf-Anzeige, Zeilen-Ausrichtung, automatisches
+  // Mitwachsen) je nach Textart unterscheiden.
+  function toggleTextFrame(note, obj, objEl) {
+    // Laufende Bearbeitung zuerst regulär beenden (speichert den Inhalt).
+    if (activeTextEdit && activeTextEdit.obj.id === obj.id) activeTextEdit.body.blur();
+    obj.style = obj.style === 'boxed' ? 'free' : 'boxed';
+    if (obj.style === 'boxed') {
+      obj.w = Math.max(obj.w, 180);
+      obj.h = Math.max(obj.h, 80);
+    }
+    note.updatedAt = Date.now();
+    schedulePersist();
+    const newEl = buildObjectEl(note, obj);
+    objEl.replaceWith(newEl);
+    // Das neue Element ist noch nicht als ausgewählt markiert, selectedObjectId
+    // zeigt aber schon auf dieses Objekt - erst zurücksetzen, damit neu gewählt wird.
+    selectedObjectId = null;
+    selectSingleObject(note, obj, newEl);
+    applyObjRect(newEl, obj);
+  }
+
   function makeToolbarBtn(icon, danger, onClick, label) {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -1709,6 +1752,11 @@
       mainToolbar.appendChild(
         makeToolbarBtn(ICONS.textCursor, false, () => convertFloatingPdfToInline(note, obj, objEl), 'An der Cursor-Stelle im Text platzieren')
       );
+    }
+    if (obj.type === 'text') {
+      const frameBtn = makeToolbarBtn(ICONS.frame, false, () => toggleTextFrame(note, obj, objEl), 'Rahmen an/aus');
+      frameBtn.classList.toggle('active', obj.style === 'boxed');
+      mainToolbar.appendChild(frameBtn);
     }
     if (obj.type === 'audio') {
       mainToolbar.appendChild(makeToolbarBtn(ICONS.transcript, false, () => startTranscription(note, obj, objEl), 'In Text umwandeln'));
@@ -2698,6 +2746,11 @@
   function insertPlainTextAtCaret(text) {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
+    // Über den Editor-Befehl einfügen (nicht direkt per Range-API): Nur so
+    // landet das Einfügen - samt dem dabei ersetzten markierten Text - als
+    // eigener Schritt im Rückgängig-Verlauf des Browsers. Direkte DOM-Änderungen
+    // kennt er nicht, ein späteres Rückgängig (Pfeil/Strg+Z) wirkte dann gar nicht.
+    if (document.execCommand('insertText', false, text)) return;
     const range = sel.getRangeAt(0);
     range.deleteContents();
     range.insertNode(document.createTextNode(text));
@@ -2709,9 +2762,41 @@
   // Fügt bereinigtes HTML (siehe sanitizePastedHtml) an der Cursor-Position ein -
   // wie insertPlainTextAtCaret, nur für mehrere/verschachtelte Knoten statt eines
   // einzelnen Textknotens.
+  // Der Editor-Befehl "insertHTML" hängt an eingefügte Stellen gern Stil-Angaben
+  // wie "font-style: inherit; background-color: transparent" an, die nichts
+  // bewirken und das gespeicherte HTML nur aufblähen. Hier werden NUR diese
+  // wirkungslosen Angaben aus dem style-Attribut entfernt (Attribut-Änderung,
+  // keine Änderung der Knoten-Struktur) - die Knoten selbst bleiben stehen,
+  // damit das Rückgängig des Browsers das Einfügen weiterhin sauber zurücknimmt.
+  function stripInsertHtmlStyleNoise(fromNode) {
+    const body = fromNode && (fromNode.nodeType === Node.ELEMENT_NODE ? fromNode : fromNode.parentElement);
+    const root = body && body.closest ? body.closest('.canvas-text-body') : null;
+    if (!root) return;
+    root.querySelectorAll('[style]').forEach((node) => {
+      const kept = [];
+      for (const decl of node.getAttribute('style').split(';')) {
+        const d = decl.trim();
+        if (!d) continue;
+        const idx = d.indexOf(':');
+        const prop = d.slice(0, idx).trim().toLowerCase();
+        const value = d.slice(idx + 1).trim().toLowerCase();
+        if (value === 'inherit') continue;
+        if ((prop === 'background-color' || prop === 'background') && value === 'transparent') continue;
+        kept.push(d);
+      }
+      if (kept.length > 0) node.setAttribute('style', kept.join('; ') + ';');
+      else node.removeAttribute('style');
+    });
+  }
+
   function insertSanitizedHtmlAtCaret(html) {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
+    // Siehe insertPlainTextAtCaret(): per Editor-Befehl, damit Rückgängig geht.
+    if (document.execCommand('insertHTML', false, html)) {
+      stripInsertHtmlStyleNoise(sel.anchorNode);
+      return;
+    }
     const range = sel.getRangeAt(0);
     range.deleteContents();
     const container = document.createElement('div');
@@ -3980,11 +4065,91 @@
     return 2.5;
   }
 
+  // Die Tinten-Ebene (Canvas) deckt bei kleinen Pixelzahlen die ganze Fläche ab.
+  // Wird sie dagegen riesig (Handy: Pixeldichte 2-3 -> weit über 10 Millionen
+  // Pixel, teils größer als die Texturgrenze der Grafikkarte), muss der Browser
+  // sie bei jeder Bildschirm-Aktualisierung komplett neu aufbereiten - das
+  // machte das Zeichnen am Handy unbenutzbar langsam. Dann deckt der Canvas
+  // nur den sichtbaren Ausschnitt plus einen Rand ab ("Fenster") und wandert
+  // beim Scrollen mit (siehe checkInkWindow()). Am PC mit normaler
+  // Pixeldichte bleibt alles wie bisher (ein Canvas für die ganze Fläche).
+  const INK_FULL_MAX_PIXELS = 6e6;
+  const INK_WINDOW_MARGIN = 160;
+  let inkWin = { x: 0, y: 0, w: 0, h: 0, dpr: 1, windowed: false };
+
+  function visibleSurfaceRect() {
+    const ws = el.canvasWorkspace.getBoundingClientRect();
+    const sf = el.canvasSurface.getBoundingClientRect();
+    const left = Math.max(ws.left, sf.left);
+    const top = Math.max(ws.top, sf.top);
+    const right = Math.min(ws.right, sf.right);
+    const bottom = Math.min(ws.bottom, sf.bottom);
+    if (right <= left || bottom <= top) return null;
+    return {
+      x0: (left - sf.left) / workspaceZoom,
+      y0: (top - sf.top) / workspaceZoom,
+      x1: (right - sf.left) / workspaceZoom,
+      y1: (bottom - sf.top) / workspaceZoom,
+    };
+  }
+
   function sizeInkLayer() {
-    const dpr = window.devicePixelRatio || 1;
-    el.inkLayer.width = Math.round(SURFACE_W * dpr);
-    el.inkLayer.height = Math.round(SURFACE_H * dpr);
-    el.inkLayer.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Auf Touch-Geräten (Handy) reichen zwei Pixel pro Punkt für Handschrift.
+    const rawDpr = window.devicePixelRatio || 1;
+    const dpr = window.matchMedia('(pointer: coarse)').matches ? Math.min(rawDpr, 2) : rawDpr;
+    const windowed = SURFACE_W * SURFACE_H * dpr * dpr > INK_FULL_MAX_PIXELS;
+    let x = 0, y = 0, w = SURFACE_W, h = SURFACE_H;
+    const vis = windowed ? visibleSurfaceRect() : null;
+    if (windowed) {
+      const v = vis || { x0: 0, y0: 0, x1: 1, y1: 1 };
+      x = Math.max(0, Math.floor(v.x0 - INK_WINDOW_MARGIN));
+      y = Math.max(0, Math.floor(v.y0 - INK_WINDOW_MARGIN));
+      w = Math.min(SURFACE_W, Math.ceil(v.x1 + INK_WINDOW_MARGIN)) - x;
+      h = Math.min(SURFACE_H, Math.ceil(v.y1 + INK_WINDOW_MARGIN)) - y;
+    }
+    const canvas = el.inkLayer;
+    canvas.width = Math.max(1, Math.round(w * dpr));
+    canvas.height = Math.max(1, Math.round(h * dpr));
+    if (windowed) {
+      canvas.style.inset = 'auto';
+      canvas.style.left = `${x}px`;
+      canvas.style.top = `${y}px`;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+    } else {
+      canvas.style.inset = '';
+      canvas.style.left = '';
+      canvas.style.top = '';
+      canvas.style.width = '';
+      canvas.style.height = '';
+    }
+    canvas.getContext('2d').setTransform(dpr, 0, 0, dpr, -x * dpr, -y * dpr);
+    inkWin = { x, y, w, h, dpr, windowed };
+  }
+
+  // Prüft (nach Scrollen/Zoomen), ob der sichtbare Ausschnitt noch im Fenster
+  // der Tinten-Ebene liegt - sonst wird das Fenster neu um ihn gelegt.
+  let inkWindowFrame = 0;
+  function scheduleInkWindowCheck() {
+    if (!inkWin.windowed || inkWindowFrame) return;
+    inkWindowFrame = requestAnimationFrame(() => {
+      inkWindowFrame = 0;
+      checkInkWindow();
+    });
+  }
+
+  function checkInkWindow() {
+    if (!inkWin.windowed || inkStrokeState || lassoPoints) return;
+    const vis = visibleSurfaceRect();
+    if (!vis) return;
+    const slack = INK_WINDOW_MARGIN / 3;
+    const lacksLeft = inkWin.x > 0 && vis.x0 < inkWin.x + slack;
+    const lacksTop = inkWin.y > 0 && vis.y0 < inkWin.y + slack;
+    const lacksRight = inkWin.x + inkWin.w < SURFACE_W && vis.x1 > inkWin.x + inkWin.w - slack;
+    const lacksBottom = inkWin.y + inkWin.h < SURFACE_H && vis.y1 > inkWin.y + inkWin.h - slack;
+    if (!(lacksLeft || lacksTop || lacksRight || lacksBottom)) return;
+    sizeInkLayer();
+    redrawInk(currentNote());
   }
 
   // Lässt die Fläche mitwachsen, wenn ein Objekt (z. B. eine vielseitige PDF)
@@ -4066,15 +4231,114 @@
     ctx.restore();
   }
 
-  function redrawInk(note) {
+  // Zeichnet die Tinten-Ebene neu. Ohne "region" komplett; mit region
+  // ({x0, y0, x1, y1} in Flächen-Koordinaten) nur diesen Ausschnitt - Striche,
+  // die den Ausschnitt gar nicht berühren, werden übersprungen. Während des
+  // Zeichnens ist das entscheidend: Die Ebene ist so groß wie die ganze Fläche
+  // (am Handy mehrere Millionen Pixel), sie bei jeder Fingerbewegung komplett zu
+  // löschen und alle Striche neu zu malen dauerte pro Bewegung Dutzende
+  // Millisekunden - der Strich erschien dadurch erst nach Sekunden.
+  function redrawInk(note, region) {
     const ctx = el.inkLayer.getContext('2d');
     ctx.save();
-    ctx.clearRect(0, 0, SURFACE_W, SURFACE_H);
-    for (const stroke of (note.ink && note.ink.strokes) || []) {
-      drawStrokeAbs(ctx, stroke, strokeAbsolutePoints(note, stroke));
+    // Grenzen des Canvas selbst (ganze Fläche oder nur das Fenster, siehe
+    // sizeInkLayer()) - alles außerhalb wird weder gelöscht noch gemalt.
+    let rx0 = inkWin.windowed ? inkWin.x : 0;
+    let ry0 = inkWin.windowed ? inkWin.y : 0;
+    let rx1 = inkWin.windowed ? inkWin.x + inkWin.w : SURFACE_W;
+    let ry1 = inkWin.windowed ? inkWin.y + inkWin.h : SURFACE_H;
+    if (region) {
+      rx0 = Math.max(rx0, Math.floor(region.x0));
+      ry0 = Math.max(ry0, Math.floor(region.y0));
+      rx1 = Math.min(rx1, Math.ceil(region.x1));
+      ry1 = Math.min(ry1, Math.ceil(region.y1));
+    }
+    if (region || inkWin.windowed) {
+      ctx.beginPath();
+      ctx.rect(rx0, ry0, Math.max(0, rx1 - rx0), Math.max(0, ry1 - ry0));
+      ctx.clip();
+    }
+    ctx.clearRect(rx0, ry0, Math.max(0, rx1 - rx0), Math.max(0, ry1 - ry0));
+    for (const stroke of (note && note.ink && note.ink.strokes) || []) {
+      const pts = strokeAbsolutePoints(note, stroke);
+      if ((region || inkWin.windowed) && !strokeTouchesRegion(pts, rx0, ry0, rx1, ry1)) continue;
+      drawStrokeAbs(ctx, stroke, pts);
     }
     if (lassoPoints && lassoPoints.length > 1) drawLassoPath(ctx, lassoPoints);
     ctx.restore();
+  }
+
+  // Grober Test (Umrandungsrechteck + Strichbreite), ob ein Strich in den
+  // Ausschnitt hineinreicht.
+  function strokeTouchesRegion(pts, rx0, ry0, rx1, ry1) {
+    if (!pts || pts.length === 0) return false;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity, maxW = 0;
+    for (const pt of pts) {
+      if (pt.x < minX) minX = pt.x;
+      if (pt.x > maxX) maxX = pt.x;
+      if (pt.y < minY) minY = pt.y;
+      if (pt.y > maxY) maxY = pt.y;
+      if (pt.width > maxW) maxW = pt.width;
+    }
+    const pad = maxW / 2 + 2;
+    return maxX + pad >= rx0 && minX - pad <= rx1 && maxY + pad >= ry0 && minY - pad <= ry1;
+  }
+
+  function inkRegionOf(pts) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, maxW = 0;
+    for (const pt of pts) {
+      if (pt.x < x0) x0 = pt.x;
+      if (pt.x > x1) x1 = pt.x;
+      if (pt.y < y0) y0 = pt.y;
+      if (pt.y > y1) y1 = pt.y;
+      if (pt.width > maxW) maxW = pt.width;
+    }
+    const pad = maxW / 2 + 3;
+    return { x0: x0 - pad, y0: y0 - pad, x1: x1 + pad, y1: y1 + pad };
+  }
+
+  // Live-Vorschau beim Zeichnen: Der Strich wird während des Ziehens als
+  // schlanke Vektor-Linie (SVG) über der Fläche angezeigt und erst beim
+  // Loslassen einmal in die Tinten-Ebene (Canvas) übernommen. Grund: Jede
+  // Änderung der riesigen Canvas-Ebene kostet den Browser pro Bild Dutzende bis
+  // hunderte Millisekunden (er muss die ganze Ebene neu aufbereiten), egal wie
+  // klein der geänderte Bereich ist - am Handy erschien der Strich dadurch erst
+  // nach Sekunden. Eine SVG-Linie dagegen kostet praktisch nichts.
+  let liveD = '';
+  let liveWidth = 1;
+  let liveFrame = 0;
+
+  function liveStart(stroke) {
+    const p = stroke.points[0];
+    const path = el.inkLivePath;
+    path.setAttribute('stroke', stroke.eraser ? 'rgba(120, 120, 120, 0.4)' : stroke.color);
+    path.setAttribute('fill', 'none');
+    path.removeAttribute('stroke-dasharray');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    liveD = `M ${p.x} ${p.y} l 0.01 0`;
+    liveWidth = p.width;
+    liveRender();
+  }
+
+  function liveAppend(point) {
+    liveD += ` L ${point.x} ${point.y}`;
+    liveWidth = point.width; // wie beim endgültigen Malen zählt die Breite des letzten Punktes
+    if (!liveFrame) liveFrame = requestAnimationFrame(liveRender);
+  }
+
+  function liveRender() {
+    if (liveFrame) cancelAnimationFrame(liveFrame);
+    liveFrame = 0;
+    el.inkLivePath.setAttribute('d', liveD);
+    el.inkLivePath.setAttribute('stroke-width', String(liveWidth));
+  }
+
+  function liveClear() {
+    if (liveFrame) cancelAnimationFrame(liveFrame);
+    liveFrame = 0;
+    liveD = '';
+    el.inkLivePath.setAttribute('d', '');
   }
 
   function startInkStroke(e) {
@@ -4098,7 +4362,7 @@
     el.inkLayer.addEventListener('pointermove', onInkMove);
     el.inkLayer.addEventListener('pointerup', onInkEnd);
     el.inkLayer.addEventListener('pointercancel', onInkEnd);
-    redrawInk(note);
+    liveStart(stroke);
   }
 
   function onInkMove(e) {
@@ -4107,8 +4371,9 @@
     const rect = el.canvasSurface.getBoundingClientRect();
     const widthPx = widthForPointer(e.pointerType, e.pressure, drawIsEraser);
     const stroke = note.ink.strokes[note.ink.strokes.length - 1];
-    stroke.points.push({ x: (e.clientX - rect.left) / workspaceZoom, y: (e.clientY - rect.top) / workspaceZoom, width: widthPx });
-    redrawInk(note);
+    const next = { x: (e.clientX - rect.left) / workspaceZoom, y: (e.clientY - rect.top) / workspaceZoom, width: widthPx };
+    stroke.points.push(next);
+    liveAppend(next);
   }
 
   function onInkEnd() {
@@ -4116,7 +4381,13 @@
     el.inkLayer.removeEventListener('pointermove', onInkMove);
     el.inkLayer.removeEventListener('pointerup', onInkEnd);
     el.inkLayer.removeEventListener('pointercancel', onInkEnd);
+    const { note } = inkStrokeState;
     inkStrokeState = null;
+    const stroke = note.ink.strokes[note.ink.strokes.length - 1];
+    // Beim Loslassen: Strich einmalig in die Tinten-Ebene übernehmen (nur sein
+    // Bereich wird neu gemalt) und die Live-Vorschau im selben Bild ausblenden.
+    if (stroke) redrawInk(note, inkRegionOf(stroke.points));
+    requestAnimationFrame(liveClear);
     schedulePersist();
   }
 
@@ -4257,13 +4528,33 @@
     el.inkLayer.addEventListener('pointerup', onLassoEnd);
     el.inkLayer.addEventListener('pointercancel', onLassoCancel);
     redrawInk(note);
+    lassoLiveRender();
+  }
+
+  // Lasso-Linie während des Ziehens ebenfalls als SVG-Vorschau (siehe
+  // liveStart()) statt die ganze Tinten-Ebene bei jeder Bewegung neu zu malen.
+  function lassoLiveRender() {
+    const path = el.inkLivePath;
+    path.setAttribute('stroke', 'rgba(0, 122, 255, 0.9)');
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-dasharray', '5 4');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'butt');
+    path.setAttribute('d', lassoPoints && lassoPoints.length > 1
+      ? 'M ' + lassoPoints.map((q) => `${q.x} ${q.y}`).join(' L ')
+      : '');
+  }
+
+  function lassoLiveClear() {
+    el.inkLivePath.removeAttribute('stroke-dasharray');
+    liveClear();
   }
 
   function onLassoMove(e) {
     if (!lassoPoints) return;
     const rect = el.canvasSurface.getBoundingClientRect();
     lassoPoints.push({ x: (e.clientX - rect.left) / workspaceZoom, y: (e.clientY - rect.top) / workspaceZoom });
-    redrawInk(currentNote());
+    if (!liveFrame) liveFrame = requestAnimationFrame(() => { liveFrame = 0; lassoLiveRender(); });
   }
 
   function onLassoEnd() {
@@ -4276,6 +4567,7 @@
     lassoPoints = null;
     if (note && lasso.length > 2) selectStrokesInLasso(note, lasso);
     redrawInk(note);
+    lassoLiveClear();
   }
 
   function onLassoCancel() {
@@ -4284,6 +4576,7 @@
     el.inkLayer.removeEventListener('pointercancel', onLassoCancel);
     lassoPoints = null;
     redrawInk(currentNote());
+    lassoLiveClear();
   }
 
   function selectStrokesInLasso(note, lasso) {
@@ -5304,7 +5597,8 @@
     if (!toolbar || !objEl) return;
     const chipRect = chip.getBoundingClientRect();
     const objRect = objEl.getBoundingClientRect();
-    const TOOLBAR_HEIGHT = 34;
+    // Am PC 34px; auf Touch-Geräten sind die Knöpfe größer (siehe CSS "pointer: coarse").
+    const TOOLBAR_HEIGHT = Math.max(34, toolbar.offsetHeight || 0);
     // Wählt die Richtung mit mehr Platz (statt fest "oben, außer es passt
     // nicht") - bei einer sehr niedrigen Textbox reicht sonst z. B. weder
     // oben noch unten wirklich, aber "oben" kann trotzdem die deutlich
@@ -5591,13 +5885,6 @@
   }
 
   // ----- Objekte hinzufügen / löschen -----
-
-  function addTextObject(style) {
-    const note = currentNote();
-    if (!note) return;
-    const { x, y } = nextPlacement(note, 220, 120);
-    addTextObjectAt(note, x, y, style);
-  }
 
   // Erstellt sofort ein freies Textobjekt an der übergebenen Stelle und aktiviert
   // direkt den Bearbeitungsmodus – für das OneNote-artige "irgendwo hinklicken und
@@ -6095,21 +6382,6 @@
     realignFreeLinesForNote(note);
     schedulePersist();
     closeBackgroundPopover();
-  }
-
-  // ---------- Textart-Popover ----------
-
-  function openTextStylePopover() {
-    const btnRect = el.addTextBtn.getBoundingClientRect();
-    el.textStylePopoverBackdrop.hidden = false;
-    const popoverWidth = 320; // entspricht max-width in .popover-wide
-    const left = Math.min(Math.max(8, btnRect.left), window.innerWidth - popoverWidth - 8);
-    el.textStylePopover.style.top = `${btnRect.bottom + 6}px`;
-    el.textStylePopover.style.left = `${Math.max(8, left)}px`;
-  }
-
-  function closeTextStylePopover() {
-    el.textStylePopoverBackdrop.hidden = true;
   }
 
   // ---------- Zugangsdaten-Popover (anlegen/bearbeiten) ----------
@@ -6680,6 +6952,184 @@
     document.querySelector('.editor-toolbar').prepend(editorBack);
   }
 
+  // ---------- Handy: untere Werkzeugleiste ("Format" / "Mehr") ----------
+  //
+  // Am Handy (Touch + schmaler Bildschirm) wären die rund 30 Knöpfe des oberen
+  // Bandes eine endlos zur Seite zu wischende Reihe. Stattdessen werden die
+  // vorhandenen Knöpfe hierher verschoben (nicht kopiert - Ereignis-Handler,
+  // Aktiv/Inaktiv-Zustand und Popover-Anbindung bleiben dadurch unverändert):
+  // unten die häufigsten (Text, Zeichnen, Bild, PDF, Sprache, Datei) plus zwei
+  // Knöpfe, die ein Fenster mit allen Formatierungs- bzw. den selteneren
+  // Einfüge-Knöpfen öffnen. Ändert sich die Bildschirmart (z. B. Tablet wird
+  // gedreht), wandert alles an den ursprünglichen Platz zurück. Am PC passiert
+  // hier gar nichts.
+  const MOBILE_RIBBON_QUERY = '(max-width: 780px) and (pointer: coarse)';
+  const MOBILE_BAR_ITEMS = [
+    ['drawModeBtn', 'Zeichnen'],
+    ['addImageBtn', 'Bild'],
+    ['addPdfBtn', 'PDF'],
+    ['addAudioBtn', 'Sprache'],
+    ['addFileBtn', 'Datei'],
+  ];
+  const MOBILE_FORMAT_ITEMS = [
+    ['headingBtn', 'Überschrift'],
+    ['ribbonFontFamilyBtn', 'Schriftart'],
+    ['ribbonFontSizeBtn', 'Größe'],
+    ['boldBtn', 'Fett'],
+    ['italicBtn', 'Kursiv'],
+    ['underlineBtn', 'Unterstrichen'],
+    ['strikeBtn', 'Durchgestr.'],
+    ['superscriptBtn', 'Hochgestellt'],
+    ['subscriptBtn', 'Tiefgestellt'],
+    ['ribbonColorBtn', 'Textfarbe'],
+    ['ribbonMarkerBtn', 'Markieren'],
+    ['bulletListBtn', 'Liste'],
+    ['numberedListBtn', 'Nummerierung'],
+  ];
+  const MOBILE_MORE_ITEMS = [
+    ['addCredentialBtn', 'Zugangsdaten'],
+    ['addReminderBtn', 'Erinnerung'],
+    ['addNoteLinkBtn', 'Link'],
+    ['objectPasteBtn', 'Einfügen'],
+    ['backgroundBtn', 'Hintergrund'],
+    ['moveNoteBtn', 'Verschieben'],
+  ];
+  // Diese Knöpfe öffnen ein eigenes Auswahlfenster - das Format-Fenster
+  // schließt sich dann, damit es nicht darunter im Weg steht.
+  const MOBILE_POPOVER_OPENER_IDS = new Set([
+    'headingBtn', 'ribbonFontFamilyBtn', 'ribbonFontSizeBtn', 'ribbonColorBtn', 'ribbonMarkerBtn',
+  ]);
+
+  function setupMobileRibbon() {
+    const bar = document.getElementById('mobileBar');
+    const sheetFormat = document.getElementById('mobileSheetFormat');
+    const sheetMore = document.getElementById('mobileSheetMore');
+    const backdrop = document.getElementById('mobileSheetBackdrop');
+    if (!bar || !sheetFormat || !sheetMore || !backdrop) return;
+    const mq = window.matchMedia(MOBILE_RIBBON_QUERY);
+    let moved = []; // { btn, placeholder }
+    let formatToggle = null;
+    let moreToggle = null;
+    let observer = null;
+
+    function closeSheets() {
+      sheetFormat.hidden = true;
+      sheetMore.hidden = true;
+      backdrop.hidden = true;
+      if (formatToggle) formatToggle.classList.remove('active');
+      if (moreToggle) moreToggle.classList.remove('active');
+    }
+
+    function openSheet(which) {
+      const isFormat = which === 'format';
+      const wasOpen = isFormat ? !sheetFormat.hidden : !sheetMore.hidden;
+      closeSheets();
+      if (wasOpen) return;
+      closeAllFormatPopovers();
+      if (isFormat) {
+        sheetFormat.hidden = false;
+        formatToggle.classList.add('active');
+      } else {
+        sheetMore.hidden = false;
+        moreToggle.classList.add('active');
+        backdrop.hidden = false;
+      }
+    }
+
+    function moveInto(container, items) {
+      for (const [id, label] of items) {
+        const btn = document.getElementById(id);
+        if (!btn) continue;
+        const placeholder = document.createComment('mobile-ribbon');
+        btn.parentNode.insertBefore(placeholder, btn);
+        btn.dataset.mlabel = label;
+        container.appendChild(btn);
+        moved.push({ btn, placeholder });
+      }
+    }
+
+    function makeToggle(id, label, glyph) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.id = id;
+      btn.className = 'toolbar-btn mobile-toggle-btn';
+      btn.dataset.mlabel = label;
+      btn.setAttribute('aria-label', label);
+      btn.innerHTML = `<span class="icon icon-emoji" aria-hidden="true">${glyph}</span>`;
+      return btn;
+    }
+
+    function enable() {
+      moveInto(bar, MOBILE_BAR_ITEMS);
+      formatToggle = makeToggle('mobileFormatBtn', 'Format', '<b>Aa</b>');
+      moreToggle = makeToggle('mobileMoreBtn', 'Mehr', '⋯');
+      bar.appendChild(formatToggle);
+      bar.appendChild(moreToggle);
+      moveInto(sheetFormat, MOBILE_FORMAT_ITEMS);
+      moveInto(sheetMore, MOBILE_MORE_ITEMS);
+      formatToggle.addEventListener('click', () => openSheet('format'));
+      moreToggle.addEventListener('click', () => openSheet('more'));
+      // Der Format-Knopf ist (wie die Formatierungs-Knöpfe selbst) nur nutzbar,
+      // solange ein Text bearbeitet wird - wird "Fett" aktiv/inaktiv, folgt er.
+      const boldBtn = document.getElementById('boldBtn');
+      const syncFormatToggle = () => {
+        const off = !boldBtn || boldBtn.disabled;
+        formatToggle.disabled = off;
+        if (off) {
+          sheetFormat.hidden = true;
+          formatToggle.classList.remove('active');
+        }
+      };
+      syncFormatToggle();
+      if (boldBtn) {
+        observer = new MutationObserver(syncFormatToggle);
+        observer.observe(boldBtn, { attributes: true, attributeFilter: ['disabled'] });
+      }
+    }
+
+    function disable() {
+      closeSheets();
+      if (observer) { observer.disconnect(); observer = null; }
+      for (const { btn, placeholder } of moved.reverse()) {
+        delete btn.dataset.mlabel;
+        if (placeholder.parentNode) placeholder.parentNode.replaceChild(btn, placeholder);
+      }
+      moved = [];
+      bar.textContent = '';
+      formatToggle = null;
+      moreToggle = null;
+    }
+
+    // Ein Fingertipp auf die untere Leiste/Fenster darf den Fokus nicht aus dem
+    // Textfeld nehmen (sonst ginge die Textauswahl für Fett/Farbe usw. verloren).
+    for (const container of [bar, sheetFormat, sheetMore]) {
+      container.addEventListener('pointerdown', (e) => e.preventDefault());
+    }
+    // Nach einer Aktion schließt sich das "Mehr"-Fenster; das Format-Fenster
+    // bleibt offen (mehrere Formate hintereinander), außer bei Knöpfen, die ein
+    // eigenes Auswahlfenster öffnen.
+    sheetMore.addEventListener('click', (e) => {
+      if (e.target.closest('button')) setTimeout(closeSheets, 0);
+    });
+    sheetFormat.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (btn && MOBILE_POPOVER_OPENER_IDS.has(btn.id)) setTimeout(closeSheets, 0);
+    });
+    bar.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (btn && !btn.classList.contains('mobile-toggle-btn')) closeSheets();
+    });
+    backdrop.addEventListener('click', closeSheets);
+
+    const apply = () => {
+      if (mq.matches && !moved.length) enable();
+      else if (!mq.matches && moved.length) disable();
+    };
+    apply();
+    if (mq.addEventListener) mq.addEventListener('change', apply);
+    else if (mq.addListener) mq.addListener(apply);
+  }
+
   // ---------- Spaltentrenner (manuell verschiebbar) ----------
 
   const LAYOUT_STORAGE_KEY = 'appleNotesPwa.layout.v1';
@@ -6754,9 +7204,12 @@
 
   async function init() {
     setupBackButtons();
+    setupMobileRibbon();
     initColumnResizers();
     wireIconTooltips();
     document.addEventListener('selectionchange', rememberActiveSelectionRange);
+    el.canvasWorkspace.addEventListener('scroll', scheduleInkWindowCheck, { passive: true });
+    window.addEventListener('resize', () => { sizeInkLayer(); redrawInk(currentNote()); scheduleInkWindowCheck(); });
     goToView(isMobileLayout() ? 'folders' : 'notes');
 
     // Manche Browser füllen das Suchfeld trotz autocomplete="off" schon beim
@@ -6862,7 +7315,6 @@
       if (e.target === el.popoverBackdrop) closeMovePopover();
     });
 
-    el.addTextBtn.addEventListener('click', openTextStylePopover);
     wireRibbonBtn(el.undoBtn, () => applyUndoRedo('undo'));
     wireRibbonBtn(el.redoBtn, () => applyUndoRedo('redo'));
     wireRibbonBtn(el.headingBtn, () => openHeadingPopover(el.headingBtn));
@@ -7115,6 +7567,7 @@
       const dist = touchDist(e.touches[0], e.touches[1]);
       workspaceZoom = clamp(workspacePinch.startZoom * (dist / workspacePinch.startDist), 0.4, 2.5);
       el.canvasSurface.style.zoom = workspaceZoom;
+      scheduleInkWindowCheck();
       const rect = el.canvasWorkspace.getBoundingClientRect();
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -7205,17 +7658,6 @@
     el.backgroundPopover.addEventListener('click', (e) => {
       const item = e.target.closest('.popover-item');
       if (item) setBackground(item.dataset.bg);
-    });
-
-    el.textStylePopoverBackdrop.addEventListener('click', (e) => {
-      if (e.target === el.textStylePopoverBackdrop) closeTextStylePopover();
-    });
-    el.textStylePopover.addEventListener('click', (e) => {
-      const item = e.target.closest('.popover-item-rich');
-      if (item) {
-        closeTextStylePopover();
-        addTextObject(item.dataset.style);
-      }
     });
 
     el.pdfModePopoverBackdrop.addEventListener('click', (e) => {

@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, minimum-scale=0.1, maximum-scale=4, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, minimum-scale=0.1, maximum-scale=4, user-scalable=yes, interactive-widget=resizes-content" />
   <title>KrisNote</title>
 
   <meta name="theme-color" content="#f2f0e9" media="(prefers-color-scheme: light)" />
@@ -151,9 +151,6 @@
           <div class="ribbon-divider"></div>
 
           <div class="ribbon-group">
-            <button class="toolbar-btn" id="addTextBtn" type="button" aria-label="Text hinzufügen" data-tooltip="Text hinzufügen">
-              <span class="icon icon-emoji" aria-hidden="true">📝</span>
-            </button>
             <button class="toolbar-btn" id="drawModeBtn" type="button" aria-label="Zeichnen" data-tooltip="Zeichnen (Stift-Modus)">
               <span class="icon icon-emoji" aria-hidden="true">✏️</span>
             </button>
@@ -242,8 +239,20 @@
 
             <div class="canvas-surface" id="canvasSurface">
               <canvas id="inkLayer" class="ink-layer"></canvas>
+              <!-- Live-Vorschau des gerade gezeichneten Strichs (siehe startInkStroke()) -->
+              <svg id="inkLive" class="ink-live" aria-hidden="true"><path id="inkLivePath" d=""></path></svg>
             </div>
           </div>
+        </div>
+      
+        <!-- Handy-Bedienung (nur bei Touch + schmalem Bildschirm, siehe setupMobileRibbon()):
+             untere Leiste mit den wichtigsten Knöpfen und zwei ausklappbare Fenster
+             (Format / Mehr). Am PC bleibt alles ausgeblendet und leer. -->
+        <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" hidden></div>
+        <div class="mobile-bottom" id="mobileBottom">
+          <div class="mobile-sheet mobile-sheet-format" id="mobileSheetFormat" hidden></div>
+          <div class="mobile-sheet mobile-sheet-more" id="mobileSheetMore" hidden></div>
+          <nav class="mobile-bar" id="mobileBar" aria-label="Werkzeuge"></nav>
         </div>
       </article>
     </main>
@@ -265,23 +274,6 @@
         <div class="popover-item" data-bg="dots">Punkte</div>
         <div class="popover-item" data-bg="lines">Linien</div>
         <div class="popover-item" data-bg="blank">Leer (Whiteboard)</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Textart-Auswahl -->
-  <div class="popover-backdrop" id="textStylePopoverBackdrop" hidden>
-    <div class="popover popover-wide" id="textStylePopover">
-      <p class="popover-title">Textart</p>
-      <div class="popover-list">
-        <button type="button" class="popover-item popover-item-rich" data-style="boxed">
-          <span class="popover-item-title">Textfeld</span>
-          <span class="popover-item-desc">Text in einem abgegrenzten, hinterlegten Feld – gut lesbar, unabhängig vom Hintergrund.</span>
-        </button>
-        <button type="button" class="popover-item popover-item-rich" data-style="free">
-          <span class="popover-item-title">Freier Text</span>
-          <span class="popover-item-desc">Text ohne sichtbaren Rahmen, liegt direkt auf der Fläche – ideal zum Beschriften auf linierten Seiten.</span>
-        </button>
       </div>
     </div>
   </div>

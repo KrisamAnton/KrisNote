@@ -1,6 +1,6 @@
 # KrisNote
 
-**Aktuelle Version:** 1.7.1 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
+**Aktuelle Version:** 1.7.9 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
 
 ## Was ist KrisNote
 
@@ -106,7 +106,7 @@ curl http://<server-adresse>:3000/api/version
 ```
 
 Neue Versionen werden in [CHANGELOG.md](CHANGELOG.md) mit ihren Änderungen
-aufgelistet und als Git-Tag (z. B. `v1.7.1`) im Repository markiert.
+aufgelistet und als Git-Tag (z. B. `v1.7.9`) im Repository markiert.
 
 ## Einstellungen per Umgebungsvariable
 
