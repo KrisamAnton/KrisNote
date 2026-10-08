@@ -44,7 +44,7 @@ anpassen, z. B. `INSTALL_DIR=/srv/krisnote bash install.sh`.
 **Von Hand** (falls man mehr Kontrolle möchte, oder das Skript nicht passt):
 
 ```bash
-git clone <URL-dieses-Repositorys> KrisNote
+git clone https://github.com/KrisamAnton/KrisNote.git KrisNote
 cd KrisNote/server
 npm install
 ```
