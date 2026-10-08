@@ -1,17 +1,95 @@
-# KrisNote
+<p align="center">
+  <img src="icons/sidebar-logo.png" alt="KrisNote Logo" width="150">
+</p>
 
-**Aktuelle Version:** 1.7.12 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
+<h1 align="center">KrisNote</h1>
+
+<p align="center">
+  <b>Deine Notizen. Dein Server. Deine Daten.</b><br>
+  Eine kostenlose, selbst gehostete Notizen-App im Stil von OneNote - für PC, Tablet und Handy.
+</p>
+
+<p align="center">
+  <a href="https://github.com/KrisamAnton/KrisNote/releases">Version 1.7.12</a> ·
+  <a href="LICENSE">MIT-Lizenz</a> ·
+  <a href="CHANGELOG.md">Änderungsverlauf</a> ·
+  <a href="https://www.paypal.me/KrisamKreativStudio">Projekt unterstützen</a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/pc-notiz.png" alt="KrisNote am PC: Ordner, Notizliste und eine Notiz mit Text und Handschrift" width="900">
+</p>
 
 ## Was ist KrisNote
 
-KrisNote ist eine selbst gehostete Notizen-App - eine Alternative zu
-OneNote/Apple Notes, bei der Notizen beliebig tief verschachtelte
-Unterseiten haben können. Text, Bilder, PDFs und Handschrift lassen sich
-frei auf einer Zeichenfläche platzieren. KrisNote läuft komplett auf dem
-eigenen Server - es gibt keine Cloud-Anbindung an einen fremden Anbieter,
-alle Daten bleiben bei dir.
+KrisNote ist eine Notizen-App, die du **auf deinem eigenen Server** betreibst
+(Raspberry Pi, Mini-PC, Proxmox-Container, NAS, VPS - alles mit Linux und
+Node.js). Du bedienst sie ganz normal im Browser oder als installierte App
+auf Handy, Tablet und PC. Es gibt **keine Cloud eines fremden Anbieters**, kein
+Konto bei einer Firma und keine Werbung.
 
-> Screenshots folgen hier.
+- Ordner, Notizen und **beliebig tief verschachtelte Unterseiten**
+- Text, Bilder, PDFs, Dateianhänge und **Handschrift/Zeichnungen** frei auf einer Fläche
+- Formatierung wie in Word: Überschriften, Fett/Kursiv, Listen, Farben, Markierungen
+- **Sprachnotizen** aufnehmen - optional automatisch in Text umwandeln (Transkription)
+- **Erinnerungen per E-Mail**, Verlinkung von Notizen untereinander, Suche über alle Notizen
+- Bereich für **Zugangsdaten** (Benutzername/Passwort übersichtlich ablegen)
+- Mehrere Benutzer, jeder mit seinen eigenen, getrennten Notizen
+- Eigene **Bedienung für das Handy** (große Knöpfe, Werkzeugleiste unten)
+
+## Warum nicht einfach OneNote?
+
+OneNote ist ein gutes Programm - aber es gehört einem Konzern. KrisNote ist für
+alle, die ihre Notizen lieber selbst in der Hand haben:
+
+| | KrisNote | typische Cloud-Notizen-App |
+|---|---|---|
+| **Wo liegen deine Daten?** | Auf deinem eigenen Server | Bei einem fremden Anbieter |
+| **Konto/Anmeldung bei einer Firma** | nicht nötig | meist Pflicht |
+| **Kosten** | kostenlos, MIT-Lizenz | oft Abo für alle Funktionen |
+| **Daten verlassen deinen Server?** | Nein - nichts wird irgendwohin gesendet | Ja |
+| **Backup & Export** | Ein Ordner (`data/`) - einfach kopieren | Über den Anbieter |
+| **Quellcode einsehbar** | Ja, komplett | Nein |
+| **Unterseiten** | beliebig tief | meist begrenzt |
+
+**Datenschutz in einem Satz:** KrisNote hat keine Telemetrie, kein Tracking und
+keine Verbindung zu irgendwelchen Diensten des Entwicklers - alles, was du
+schreibst, zeichnest oder hochlädst, bleibt in einem Ordner auf *deinem* Server.
+(Zwei Dinge, die du selbst einschaltest, sind die Ausnahme: die optionale
+Erinnerungs-E-Mail, die über den Mail-Server verschickt wird, den du selbst
+einträgst - und die optionale Sprach-Transkription, die beim ersten Mal das
+Spracherkennungs-Modell herunterlädt. Deine Aufnahmen selbst werden dabei
+nie versendet, die Umwandlung läuft auf deinem Server.)
+
+<p align="center">
+  <img src="docs/screenshots/handy-notiz.png" alt="KrisNote am Handy: Notiz mit Einkaufsliste" width="260">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/handy-format.png" alt="KrisNote am Handy: Format-Auswahl am unteren Rand" width="260">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/pc-suche.png" alt="KrisNote: Suche über alle Notizen" width="640">
+</p>
+
+## Ehrlich gesagt: Was KrisNote (noch) nicht ist
+
+Damit du nicht überrascht wirst:
+
+- **Du brauchst einen eigenen Server** (oder einen kleinen Rechner, der dauerhaft läuft) und musst ihn selbst aktuell halten und sichern. Die [Installation](#installation) ist dafür mit einer Zeile erledigt, ein Backup musst du aber selbst einrichten.
+- **Kein Offline-Betrieb:** Die App braucht die Verbindung zu deinem Server, um Notizen zu laden und zu speichern.
+- **Kein gemeinsames Bearbeiten in Echtzeit** - jeder Benutzer hat seine eigenen Notizen.
+- **Kein Import aus OneNote** und keine native App aus dem App Store - KrisNote ist eine Web-App (PWA), die du auf dem Handy zum Startbildschirm hinzufügen kannst.
+- Ein **Ein-Personen-Projekt**: Fehler sind möglich. Mach regelmäßig ein Backup (siehe [Backup](#backup)) und melde Probleme gern als [Issue](https://github.com/KrisamAnton/KrisNote/issues).
+
+## Wie ist KrisNote entstanden?
+
+KrisNote wurde von **Krisam gemeinsam mit einer KI** (Claude von Anthropic)
+entwickelt: Die Ideen, Wünsche, das Testen am echten Gerät und alle
+Entscheidungen kommen vom Menschen, den Großteil des Codes hat die KI
+geschrieben. Wir sagen das offen, weil du wissen sollst, was du dir auf den
+Server holst - der gesamte Quellcode liegt hier offen zum Nachlesen. Er wurde
+mehrfach von Hand getestet; trotzdem gilt wie bei jeder Software: Sichere deine
+Daten.
 
 ## Voraussetzungen
 
@@ -134,7 +212,7 @@ lassen sich beim Start setzen (z. B. `PORT=3000 npm start`) oder als
 | `DATA_DIR` | `<Installationsordner>/data` | Ordner für Benutzerkonten, Notizen und hochgeladene Dateien. |
 | `ALLOW_REGISTRATION` | aus | Auf `true` setzen, damit sich beliebige Personen über die Anmeldeseite selbst einen Zugang anlegen können. Standardmäßig aus - weitere Benutzer legt man sonst per Kommandozeile an (siehe unten). |
 | `SETUP_CODE` | zufällig erzeugt | Erlaubt, den Einrichtungscode für den allerersten Start fest vorzugeben, statt ihn zufällig erzeugen und im Log ausgeben zu lassen. |
-| `TRUST_PROXY` | aus | Nur nötig, wenn KrisNote **hinter einem Reverse-Proxy** läuft (z. B. Cloudflare Tunnel, nginx, Caddy). Wert: Anzahl der vorgeschalteten Proxys (meist `1`) oder die Adresse des Proxys (z. B. `10.0.0.5` oder `loopback`). Siehe Abschnitt "Fernzugriff". |
+| `TRUST_PROXY` | aus | Nur nötig, wenn KrisNote **hinter einem Reverse-Proxy** läuft (z. B. Cloudflare Tunnel, nginx, Caddy). Wert: Anzahl der vorgeschalteten Proxys (meist `1`) oder die Adresse des Proxys (z. B. `10.0.0.5` oder `loopback`). Siehe Abschnitt "Von unterwegs erreichen und HTTPS". |
 | `PYTHON_BIN` | `python3` | Pfad zum Python-Interpreter für die Transkription (z. B. bei Verwendung eines eigenen venv). |
 | `WHISPER_MODEL` | `medium` | Modellgröße für die Spracherkennung (`small` ist schneller, aber etwas ungenauer). |
 | `TRANSCRIBE_LANGUAGE` | `de` | Sprache, die die Transkription erwartet. |
@@ -182,35 +260,53 @@ stoppen (`sudo systemctl stop krisnote`, nach dem Backup wieder
 `sudo systemctl start krisnote`) - im laufenden Betrieb sichern funktioniert
 in der Praxis aber ebenfalls, da Schreibvorgänge atomar sind.
 
-## Fernzugriff (optional)
+## Von unterwegs erreichen und HTTPS (optional)
 
-KrisNote selbst bringt keinen fertigen Fernzugriff von außerhalb des
-eigenen Netzwerks mit. Gängige Möglichkeiten, KrisNote trotzdem von
-unterwegs zu erreichen:
+Direkt nach der Installation ist KrisNote nur in deinem Heimnetz unter
+`http://<server-adresse>:3000` erreichbar. Das reicht für viele völlig aus.
+Willst du auch von unterwegs zugreifen (und das Handy-App-Gefühl mit
+"Zum Startbildschirm hinzufügen" nutzen - das funktioniert nur über **HTTPS**),
+hast du diese Möglichkeiten:
 
-- Nur im eigenen Heimnetz nutzen (kein Fernzugriff nötig).
-- Ein VPN zum eigenen Netzwerk (z. B. Tailscale, WireGuard).
-- Ein Tunnel-Dienst wie Cloudflare Tunnel, der eine eigene Domain
-  (z. B. `notizen.meine-domain.example`) nach außen freigibt, ohne einen
-  Port am Router öffnen zu müssen.
+| Möglichkeit | Aufwand | Besonderheit |
+|---|---|---|
+| **Nur im Heimnetz** | keiner | sicherste Variante |
+| **VPN** (z. B. Tailscale oder WireGuard) | gering | kein Port am Router offen; Handy muss im VPN sein |
+| **Cloudflare Tunnel** | mittel | eigene Domain nötig, HTTPS automatisch, kein Port am Router offen |
+| **Reverse-Proxy** (Caddy, nginx) | mittel | HTTPS per Let's Encrypt, Port 443 muss freigegeben werden |
 
-**Wichtig, falls KrisNote von außerhalb des eigenen Netzwerks erreichbar
-gemacht wird:** `ALLOW_REGISTRATION` ausgeschaltet lassen (Standard) und
-den Zugriff über HTTPS absichern (z. B. übernimmt Cloudflare Tunnel das
-automatisch) - sonst kann sich potenziell jeder im Internet einen Zugang
-anlegen bzw. Zugangsdaten könnten unverschlüsselt übertragen werden. Eine
-Schritt-für-Schritt-Anleitung für eine bestimmte Lösung ist hier bewusst
-nicht enthalten, da das von der eigenen Netzwerk-Umgebung abhängt.
+**Beispiel Cloudflare Tunnel:** In Cloudflare unter *Zero Trust → Networks →
+Connectors* einen Tunnel anlegen, einen *Published application route* mit
+deiner Domain hinzufügen und als Service-URL `http://<server-adresse>:3000`
+eintragen (die URL muss mit `http://` beginnen).
 
-**Läuft KrisNote hinter einem Proxy oder Tunnel (z. B. Cloudflare Tunnel),
-bitte `TRUST_PROXY=1` setzen** (z. B. als `Environment=TRUST_PROXY=1` im
-systemd-Dienst, siehe `deploy/krisnote.service`). Ohne diese Einstellung sieht
-der Server bei jeder Anfrage nur die Adresse des Proxys: Die Sperre nach
-Fehlversuchen trifft dann alle Besucher gemeinsam (jemand von außen könnte
-dein Konto durch absichtliche Fehlversuche kurz sperren), und die
-Anmelde-Cookies werden nicht als "Secure" markiert. Ohne Proxy (direkter
-Zugriff) die Einstellung **nicht** setzen - sonst ließe sich die Adresse
-durch einen mitgeschickten Header fälschen.
+**Wichtig, sobald KrisNote aus dem Internet erreichbar ist:**
+
+1. `ALLOW_REGISTRATION` **ausgeschaltet lassen** (Standard) - sonst kann sich jeder einen Zugang anlegen.
+2. **Nur über HTTPS** erreichbar machen, damit Passwörter nicht unverschlüsselt übertragen werden.
+3. Ein **starkes Passwort** verwenden.
+4. **`TRUST_PROXY=1` setzen**, wenn ein Proxy/Tunnel davor sitzt (siehe unten).
+
+**Was ist `TRUST_PROXY`?** Läuft KrisNote hinter einem Proxy oder Tunnel,
+sieht der Server bei jeder Anfrage nur die Adresse des Proxys. Ohne
+`TRUST_PROXY=1` trifft die Sperre nach Fehlversuchen dann alle Besucher
+gemeinsam (jemand von außen könnte dein Konto durch absichtliche Fehlversuche
+kurz sperren), und die Anmelde-Cookies werden nicht als "Secure" markiert. Der
+**Installer fragt danach** und trägt es automatisch ein. Von Hand geht es so:
+
+```bash
+sudo systemctl edit krisnote
+# im geöffneten Editor eintragen:
+#   [Service]
+#   Environment=TRUST_PROXY=1
+sudo systemctl restart krisnote
+```
+
+Läuft KrisNote **ohne** Proxy (direkter Zugriff), die Einstellung **nicht**
+setzen - sonst ließe sich die Adresse durch einen mitgeschickten Header
+fälschen.
+
+Mehr zur Sicherheit: [SECURITY.md](SECURITY.md).
 
 ## Projekt unterstützen
 
