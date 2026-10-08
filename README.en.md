@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://github.com/KrisamAnton/KrisNote/releases">Version 1.7.12</a> ·
-  <a href="LICENSE">MIT license</a> ·
+  <a href="LICENSE">Free &amp; open source</a> ·
   <a href="CHANGELOG.md">Changelog (German)</a> ·
   <a href="https://www.paypal.me/KrisamKreativStudio">Support the project</a>
 </p>
@@ -75,11 +75,11 @@ people who prefer to keep their notes in their own hands:
 |---|---|---|
 | **Where is your data?** | On your own server | With a third-party provider |
 | **Account with a company** | not needed | usually required |
-| **Cost** | free, MIT license | often a subscription for all features |
+| **Cost** | free to use | often a subscription for all features |
 | **Does data leave your server?** | No - nothing is sent anywhere | Yes |
 | **Backup & export** | One folder (`data/`) - just copy it | Through the provider |
 | **Source code visible** | Yes, all of it | No |
-| **Sub-pages** | unlimited depth | often limited |
+| **Sub-pages** | unlimited depth | often only 1-2 levels |
 
 **Privacy in one sentence:** KrisNote has no telemetry, no tracking and no
 connection to any service run by the developer - everything you write, draw or
@@ -99,14 +99,14 @@ anywhere; the conversion runs on your server.)
   <img src="docs/screenshots/pc-suche.png" alt="KrisNote: search across all notes" width="640">
 </p>
 
-## Honestly: what KrisNote is not (yet)
+## What you should know before running it
 
-So you are not surprised:
+So you know from the start what you are getting into:
 
 - **You need your own server** (or a small always-on machine) and have to keep it updated and backed up yourself. [Installation](#installation) is one line, but you have to set up backups yourself.
 - **No offline mode:** The app needs a connection to your server to load and save notes.
 - **No real-time collaboration** - each user has their own notes.
-- **No OneNote import** and no native app from an app store - KrisNote is a web app (PWA) that you can add to your phone's home screen.
+- **KrisNote is a modern web app (PWA):** it runs in the browser and can be added to your phone's home screen like an app. PC and phone each get their own tailored view.
 - **German interface only** for now.
 - A **one-person project**: bugs are possible. Make regular backups (see [Backup](#backup)) and report problems as an [issue](https://github.com/KrisamAnton/KrisNote/issues).
 
@@ -118,6 +118,13 @@ and the AI wrote most of the code. We say this openly because you should know
 what you are putting on your server - the entire source code is public and open
 to read. It has been tested by hand many times; still, as with any software:
 back up your data.
+
+**Why KrisNote exists:** Krisam used OneNote very intensively, even for keeping
+credentials. Some things got in the way: security (the data sits with a
+third-party provider), the limited sub-page levels and the speech recognition.
+Those were redone and improved here: all data stays on your own server,
+sub-pages can be nested to any depth, and voice recordings can be converted to
+text automatically.
 
 ## Requirements
 

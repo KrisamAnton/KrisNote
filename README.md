@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://github.com/KrisamAnton/KrisNote/releases">Version 1.7.12</a> ·
-  <a href="LICENSE">MIT-Lizenz</a> ·
+  <a href="LICENSE">Kostenlos &amp; Open Source</a> ·
   <a href="CHANGELOG.md">Änderungsverlauf</a> ·
   <a href="https://www.paypal.me/KrisamKreativStudio">Projekt unterstützen</a>
 </p>
@@ -75,11 +75,11 @@ alle, die ihre Notizen lieber selbst in der Hand haben:
 |---|---|---|
 | **Wo liegen deine Daten?** | Auf deinem eigenen Server | Bei einem fremden Anbieter |
 | **Konto/Anmeldung bei einer Firma** | nicht nötig | meist Pflicht |
-| **Kosten** | kostenlos, MIT-Lizenz | oft Abo für alle Funktionen |
+| **Kosten** | kostenlos und frei nutzbar | oft Abo für alle Funktionen |
 | **Daten verlassen deinen Server?** | Nein - nichts wird irgendwohin gesendet | Ja |
 | **Backup & Export** | Ein Ordner (`data/`) - einfach kopieren | Über den Anbieter |
 | **Quellcode einsehbar** | Ja, komplett | Nein |
-| **Unterseiten** | beliebig tief | meist begrenzt |
+| **Unterseiten** | beliebig tief | meist nur 1-2 Ebenen |
 
 **Datenschutz in einem Satz:** KrisNote hat keine Telemetrie, kein Tracking und
 keine Verbindung zu irgendwelchen Diensten des Entwicklers - alles, was du
@@ -100,14 +100,14 @@ nie versendet, die Umwandlung läuft auf deinem Server.)
   <img src="docs/screenshots/pc-suche.png" alt="KrisNote: Suche über alle Notizen" width="640">
 </p>
 
-## Ehrlich gesagt: Was KrisNote (noch) nicht ist
+## Was du für den Betrieb wissen solltest
 
-Damit du nicht überrascht wirst:
+Damit du von Anfang an weißt, worauf du dich einlässt:
 
 - **Du brauchst einen eigenen Server** (oder einen kleinen Rechner, der dauerhaft läuft) und musst ihn selbst aktuell halten und sichern. Die [Installation](#installation) ist dafür mit einer Zeile erledigt, ein Backup musst du aber selbst einrichten.
 - **Kein Offline-Betrieb:** Die App braucht die Verbindung zu deinem Server, um Notizen zu laden und zu speichern.
 - **Kein gemeinsames Bearbeiten in Echtzeit** - jeder Benutzer hat seine eigenen Notizen.
-- **Kein Import aus OneNote** und keine native App aus dem App Store - KrisNote ist eine Web-App (PWA), die du auf dem Handy zum Startbildschirm hinzufügen kannst.
+- **KrisNote ist eine moderne Web-App (PWA):** Sie läuft im Browser und lässt sich am Handy wie eine App zum Startbildschirm hinzufügen. Am PC und am Handy gibt es je eine eigene, darauf abgestimmte Ansicht.
 - Ein **Ein-Personen-Projekt**: Fehler sind möglich. Mach regelmäßig ein Backup (siehe [Backup](#backup)) und melde Probleme gern als [Issue](https://github.com/KrisamAnton/KrisNote/issues).
 
 ## Wie ist KrisNote entstanden?
@@ -119,6 +119,13 @@ geschrieben. Wir sagen das offen, weil du wissen sollst, was du dir auf den
 Server holst - der gesamte Quellcode liegt hier offen zum Nachlesen. Er wurde
 mehrfach von Hand getestet; trotzdem gilt wie bei jeder Software: Sichere deine
 Daten.
+
+**Warum es KrisNote gibt:** Krisam hat OneNote selbst sehr intensiv genutzt, bis hin
+zum Ablegen von Zugangsdaten. Einiges hat dabei gestört: die Sicherheit (die
+Daten liegen bei einem fremden Anbieter), die begrenzten Unterseiten und die
+Spracherkennung. Das wurde hier neu gemacht und verbessert: Alle Daten bleiben
+auf dem eigenen Server, Unterseiten sind beliebig tief verschachtelbar, und
+Sprachaufnahmen lassen sich automatisch in Text umwandeln.
 
 ## Voraussetzungen
 
