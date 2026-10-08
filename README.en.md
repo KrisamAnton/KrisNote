@@ -120,8 +120,8 @@ to read. It has been tested by hand many times; still, as with any software:
 back up your data.
 
 **Why KrisNote exists:** Krisam used OneNote very intensively, even for keeping
-credentials. Some things got in the way: security (the data sits with a
-third-party provider), the limited sub-page levels and the speech recognition.
+credentials. Some things got in the way: security (everything
+sits on random servers abroad), the limited sub-page levels and the speech recognition.
 Those were redone and improved here: all data stays on your own server,
 sub-pages can be nested to any depth, and voice recordings can be converted to
 text automatically.

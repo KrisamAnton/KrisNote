@@ -121,8 +121,8 @@ mehrfach von Hand getestet; trotzdem gilt wie bei jeder Software: Sichere deine
 Daten.
 
 **Warum es KrisNote gibt:** Krisam hat OneNote selbst sehr intensiv genutzt, bis hin
-zum Ablegen von Zugangsdaten. Einiges hat dabei gestört: die Sicherheit (die
-Daten liegen bei einem fremden Anbieter), die begrenzten Unterseiten und die
+zum Ablegen von Zugangsdaten. Einiges hat dabei gestört: die Sicherheit (alles
+liegt auf irgendwelchen ausländischen Servern), die begrenzten Unterseiten und die
 Spracherkennung. Das wurde hier neu gemacht und verbessert: Alle Daten bleiben
 auf dem eigenen Server, Unterseiten sind beliebig tief verschachtelbar, und
 Sprachaufnahmen lassen sich automatisch in Text umwandeln.
