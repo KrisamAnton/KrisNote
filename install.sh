@@ -6,6 +6,10 @@
 # startet den Dienst - danach läuft KrisNote automatisch auch nach einem
 # Server-Neustart weiter.
 #
+# Das Skript dient auch zum Aktualisieren: Auf einem Server, auf dem KrisNote
+# schon installiert ist, holt es den neuesten Stand und startet den Dienst neu.
+# Die Daten (Ordner data/) und die bisherigen Einstellungen bleiben unverändert.
+#
 # Verwendung:
 #   curl -fsSL https://raw.githubusercontent.com/KrisamAnton/KrisNote/main/install.sh | bash
 # oder (z. B. bei einem privaten Repository, wo git nach Zugangsdaten fragt):
@@ -65,7 +69,9 @@ main() {
   node --version
 
   log "Hole KrisNote nach ${INSTALL_DIR}"
+  is_update=0
   if [ -d "$INSTALL_DIR/.git" ]; then
+    is_update=1
     echo "Ordner existiert bereits und ist ein Git-Repository - hole stattdessen den neuesten Stand."
     git -C "$INSTALL_DIR" pull
   elif [ -e "$INSTALL_DIR" ]; then
@@ -120,11 +126,26 @@ WantedBy=multi-user.target
 EOF
 
   systemctl daemon-reload
-  systemctl enable --now krisnote
+  systemctl enable krisnote
+  # restart statt nur start: Bei einem Update läuft der Dienst schon und soll den
+  # neuen Code laden (läuft er noch nicht, startet restart ihn ganz normal).
+  systemctl restart krisnote
 
   IP="$(hostname -I 2>/dev/null | awk '{print $1}')"
-  log "Fertig!"
-  cat <<EOF
+  if [ "$is_update" -eq 1 ]; then
+    log "Update fertig!"
+    cat <<EOF
+
+KrisNote wurde auf den neuesten Stand gebracht und neu gestartet.
+Deine Notizen und Einstellungen sind unverändert.
+
+Version prüfen:
+  curl -s http://localhost:3000/api/version
+
+EOF
+  else
+    log "Fertig!"
+    cat <<EOF
 
 KrisNote läuft jetzt als Dienst (startet auch nach einem Neustart automatisch).
 
@@ -134,7 +155,10 @@ Nächster Schritt - Einrichtungscode finden:
 Danach im Browser öffnen:
   http://${IP:-<IP-dieses-Servers>}:3000/setup.html
 
+Später aktualisieren: einfach dieselbe Installationszeile noch einmal ausführen.
+
 EOF
+  fi
 }
 
 main "$@"; exit $?

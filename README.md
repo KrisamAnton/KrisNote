@@ -227,8 +227,15 @@ node server/create-user.js <benutzername> <passwort> [Anzeigename]
 
 ## Update
 
+**Am einfachsten:** Wenn du KrisNote mit dem Installations-Skript eingerichtet
+hast, führst du als root einfach dieselbe Installationszeile noch einmal aus
+(siehe "Installation"). Das Skript holt den neuesten Stand und startet den Dienst
+neu. Deine Notizen und Einstellungen bleiben unverändert.
+
+**Von Hand:**
+
 1. **Vorher immer ein Backup von `data/` anlegen** (siehe Abschnitt
-   "Backup" unten).
+   "Backup" unten). Gilt auch vor dem Update per Skript.
 2. Neuen Code holen und Abhängigkeiten aktualisieren:
    ```bash
    cd KrisNote
