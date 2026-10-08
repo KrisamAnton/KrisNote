@@ -10,6 +10,10 @@
 </p>
 
 <p align="center">
+  <b>Deutsch</b> · <a href="README.en.md">English</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/KrisamAnton/KrisNote/releases">Version 1.7.12</a> ·
   <a href="LICENSE">MIT-Lizenz</a> ·
   <a href="CHANGELOG.md">Änderungsverlauf</a> ·
@@ -236,7 +240,7 @@ neu. Deine Notizen und Einstellungen bleiben unverändert.
 
 1. **Vorher immer ein Backup von `data/` anlegen** (siehe Abschnitt
    "Backup" unten). Gilt auch vor dem Update per Skript.
-2. Neuen Code holen und Abhängigkeiten aktualisieren:
+2. Neuen Code holen und Abhängigkeiten aktualisieren (beim Installations-Skript heißt der Ordner `/opt/krisnote`):
    ```bash
    cd KrisNote
    git pull
