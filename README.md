@@ -1,6 +1,6 @@
 # KrisNote
 
-**Aktuelle Version:** 1.7.9 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
+**Aktuelle Version:** 1.7.11 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
 
 ## Was ist KrisNote
 
@@ -106,7 +106,7 @@ curl http://<server-adresse>:3000/api/version
 ```
 
 Neue Versionen werden in [CHANGELOG.md](CHANGELOG.md) mit ihren Änderungen
-aufgelistet und als Git-Tag (z. B. `v1.7.9`) im Repository markiert.
+aufgelistet und als Git-Tag (z. B. `v1.7.11`) im Repository markiert.
 
 ## Einstellungen per Umgebungsvariable
 
@@ -189,4 +189,11 @@ nicht enthalten, da das von der eigenen Netzwerk-Umgebung abhängt.
 
 ## Lizenz
 
-Wird noch festgelegt.
+KrisNote steht unter der **MIT-Lizenz** (siehe [LICENSE](LICENSE)): Du darfst es
+kostenlos nutzen, verändern und weitergeben - auch geschäftlich. Der
+Urheber-Hinweis und der Lizenztext müssen dabei erhalten bleiben. Das Programm
+wird ohne jede Gewährleistung bereitgestellt.
+
+Enthaltene Fremdsoftware: [pdf.js](https://mozilla.github.io/pdf.js/) (Apache-2.0,
+Lizenztext in `js/vendor/LICENSE-pdf.js.txt`) sowie die über `npm` installierten
+Pakete (alle unter freizügigen Lizenzen wie MIT, ISC oder BSD).
