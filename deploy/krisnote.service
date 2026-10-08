@@ -42,6 +42,8 @@ RestartSec=5
 # Environment=PORT=3000
 # Environment=DATA_DIR=/pfad/zu/KrisNote/data
 # Environment=ALLOW_REGISTRATION=true
+# Nur wenn KrisNote hinter einem Proxy/Tunnel (z. B. Cloudflare Tunnel) läuft:
+# Environment=TRUST_PROXY=1
 # Environment=SETUP_CODE=eigenerFesterCode
 # Environment=PYTHON_BIN=/pfad/zu/venv/bin/python3
 # Environment=HF_TOKEN=hf_xxx

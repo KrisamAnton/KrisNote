@@ -1,6 +1,6 @@
 # KrisNote
 
-**Aktuelle Version:** 1.7.11 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
+**Aktuelle Version:** 1.7.12 (Testphase) - siehe [CHANGELOG.md](CHANGELOG.md)
 
 ## Was ist KrisNote
 
@@ -106,7 +106,7 @@ curl http://<server-adresse>:3000/api/version
 ```
 
 Neue Versionen werden in [CHANGELOG.md](CHANGELOG.md) mit ihren Änderungen
-aufgelistet und als Git-Tag (z. B. `v1.7.11`) im Repository markiert.
+aufgelistet und als Git-Tag (z. B. `v1.7.12`) im Repository markiert.
 
 ## Einstellungen per Umgebungsvariable
 
@@ -120,6 +120,7 @@ lassen sich beim Start setzen (z. B. `PORT=3000 npm start`) oder als
 | `DATA_DIR` | `<Installationsordner>/data` | Ordner für Benutzerkonten, Notizen und hochgeladene Dateien. |
 | `ALLOW_REGISTRATION` | aus | Auf `true` setzen, damit sich beliebige Personen über die Anmeldeseite selbst einen Zugang anlegen können. Standardmäßig aus - weitere Benutzer legt man sonst per Kommandozeile an (siehe unten). |
 | `SETUP_CODE` | zufällig erzeugt | Erlaubt, den Einrichtungscode für den allerersten Start fest vorzugeben, statt ihn zufällig erzeugen und im Log ausgeben zu lassen. |
+| `TRUST_PROXY` | aus | Nur nötig, wenn KrisNote **hinter einem Reverse-Proxy** läuft (z. B. Cloudflare Tunnel, nginx, Caddy). Wert: Anzahl der vorgeschalteten Proxys (meist `1`) oder die Adresse des Proxys (z. B. `10.0.0.5` oder `loopback`). Siehe Abschnitt "Fernzugriff". |
 | `PYTHON_BIN` | `python3` | Pfad zum Python-Interpreter für die Transkription (z. B. bei Verwendung eines eigenen venv). |
 | `WHISPER_MODEL` | `medium` | Modellgröße für die Spracherkennung (`small` ist schneller, aber etwas ungenauer). |
 | `TRANSCRIBE_LANGUAGE` | `de` | Sprache, die die Transkription erwartet. |
@@ -186,6 +187,23 @@ automatisch) - sonst kann sich potenziell jeder im Internet einen Zugang
 anlegen bzw. Zugangsdaten könnten unverschlüsselt übertragen werden. Eine
 Schritt-für-Schritt-Anleitung für eine bestimmte Lösung ist hier bewusst
 nicht enthalten, da das von der eigenen Netzwerk-Umgebung abhängt.
+
+**Läuft KrisNote hinter einem Proxy oder Tunnel (z. B. Cloudflare Tunnel),
+bitte `TRUST_PROXY=1` setzen** (z. B. als `Environment=TRUST_PROXY=1` im
+systemd-Dienst, siehe `deploy/krisnote.service`). Ohne diese Einstellung sieht
+der Server bei jeder Anfrage nur die Adresse des Proxys: Die Sperre nach
+Fehlversuchen trifft dann alle Besucher gemeinsam (jemand von außen könnte
+dein Konto durch absichtliche Fehlversuche kurz sperren), und die
+Anmelde-Cookies werden nicht als "Secure" markiert. Ohne Proxy (direkter
+Zugriff) die Einstellung **nicht** setzen - sonst ließe sich die Adresse
+durch einen mitgeschickten Header fälschen.
+
+## Projekt unterstützen
+
+KrisNote ist und bleibt kostenlos. Wenn es dir gefällt und du die Arbeit
+dahinter honorieren möchtest, freue ich mich über eine freiwillige Spende:
+[paypal.me/KrisamKreativStudio](https://www.paypal.me/KrisamKreativStudio).
+Der Link steht auch in der App unter Einstellungen.
 
 ## Lizenz
 

@@ -3348,3 +3348,10 @@ textarea.popover-text-input {
   aspect-ratio: auto;
   border-radius: 10px;
 }
+
+/* Link "Projekt unterstützen" im Einstellungs-Fenster: sieht aus wie die Knöpfe darüber. */
+a.popover-item {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
