@@ -35,7 +35,21 @@ Node.js falls nötig, klont das Repository nach `/opt/krisnote`, führt
 danach dauerhaft, auch nach einem Server-Neustart):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/KrisamAnton/KrisNote/main/install.sh | bash
+apt-get update && apt-get install -y curl && curl -fsSL https://raw.githubusercontent.com/KrisamAnton/KrisNote/main/install.sh | bash
+```
+
+(Der erste Teil installiert `curl`, falls es noch fehlt - auf frischen
+Debian-Containern ist das oft der Fall. Ist `curl` schon da, schadet er nicht.)
+
+Am Ende zeigt das Skript die Adresse an. Den Einrichtungscode für den ersten
+Start findest du mit `journalctl -u krisnote -n 20`.
+
+Falls der Einzeiler bei dir nicht durchläuft, geht es auch in zwei Schritten
+(erst die Datei holen, dann ausführen):
+
+```bash
+curl -fsSL -o install.sh https://raw.githubusercontent.com/KrisamAnton/KrisNote/main/install.sh
+bash install.sh
 ```
 
 Zielordner und Dienst-Benutzer lassen sich davor per Umgebungsvariable
