@@ -39,7 +39,32 @@ Konto bei einer Firma und keine Werbung.
 - **Erinnerungen per E-Mail**, Verlinkung von Notizen untereinander, Suche über alle Notizen
 - Bereich für **Zugangsdaten** (Benutzername/Passwort übersichtlich ablegen)
 - Mehrere Benutzer, jeder mit seinen eigenen, getrennten Notizen
-- Eigene **Bedienung für das Handy** (große Knöpfe, Werkzeugleiste unten)
+- **Eigene Ansicht für PC und für das Handy** (große Knöpfe, Werkzeugleiste unten)
+
+## Das macht KrisNote besonders
+
+**Eigene Ansicht für PC und Handy.** KrisNote erkennt automatisch, womit du
+arbeitest, und zeigt am PC die klassische Ansicht mit Ordnern, Notizliste und
+Werkzeugleiste oben - am Handy eine eigene Oberfläche mit großen Knöpfen und
+der Werkzeugleiste unten am Daumen. So lässt sich beides optisch gut und
+bequem bedienen, ohne dass du etwas umschalten musst.
+
+**Sprachaufnahme mit automatischer Transkription.** Nimm Sprache direkt in der
+Notiz auf und lass sie automatisch in Text umwandeln. Das eignet sich zum
+Mitlaufen lassen bei **Besprechungen** (auf Wunsch sogar mit Erkennung der
+Sprecher) und als **Notizblock für schnelle Gedanken unterwegs**. Die
+Aufnahme und die Umwandlung bleiben auf deinem Server. *(Optional: braucht
+zusätzliche Python-Pakete und etwas Rechenleistung, siehe
+[Voraussetzungen](#voraussetzungen).)*
+
+**Auf Bildern zeichnen und markieren.** Du kannst direkt auf ein Bild malen,
+etwas einkreisen oder anstreichen. Die Markierungen gehören zum Bild: Verschiebst
+oder vergrößerst du das Bild, wandern sie mit.
+
+**Dateien und PDFs mitten im Text.** Du kannst Dateien (z. B. Word, Excel) und
+PDFs an beliebiger Stelle im Text einfügen. Sie hängen am Text und verschieben
+sich mit, wenn du den Text verschiebst - so bleibt der Anhang
+immer dort, wo er hingehört.
 
 ## Warum nicht einfach OneNote?
 

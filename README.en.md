@@ -40,7 +40,31 @@ third-party cloud**, no account with a company and no ads.
 - **E-mail reminders**, links between notes, search across all notes
 - A section for **credentials** (store user names and passwords in an organized way)
 - Multiple users, each with their own separate notes
-- A dedicated **phone layout** (large buttons, toolbar at the bottom)
+- A **separate view for PC and for phone** (large buttons, toolbar at the bottom)
+
+## What makes KrisNote special
+
+**A separate view for PC and phone.** KrisNote detects automatically what you
+are working with. On a PC you get the classic layout with folders, note list and
+the toolbar on top; on a phone you get a dedicated interface with large buttons
+and the toolbar at the bottom, right under your thumb. Both look good and are
+comfortable to use, and you never have to switch anything.
+
+**Voice recording with automatic transcription.** Record speech right inside a
+note and have it converted to text automatically. It works well for letting it
+run during **meetings** (optionally even recognizing the speakers) and as a
+**notepad for quick thoughts on the go**. Recording and conversion stay on
+your server. *(Optional: needs extra Python packages and some processing power,
+see [Requirements](#requirements).)*
+
+**Draw and mark up on images.** You can draw directly on an image, circle
+something or underline it. The markings belong to the image: if you move or
+resize the image, they move with it.
+
+**Files and PDFs in the middle of your text.** You can insert files (e.g. Word,
+Excel) and PDFs anywhere in the text. They are attached to the text and move
+along when you move it, so an attachment always stays where it
+belongs.
 
 ## Why not just OneNote?
 
