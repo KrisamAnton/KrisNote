@@ -15,6 +15,8 @@
 #   INSTALL_DIR   Zielordner (Standard: /opt/krisnote)
 #   SERVICE_USER  Linux-Benutzer für den Dienst (Standard: root)
 #   REPO_URL      Git-URL des Repositorys (Standard: dieses Projekt)
+#   TRUST_PROXY   Nur setzen, wenn KrisNote hinter einem Tunnel/Reverse-Proxy
+#                 läuft (z. B. 1). Ohne Angabe fragt das Skript danach.
 
 set -euo pipefail
 
@@ -77,6 +79,28 @@ main() {
 
   log "Richte systemd-Dienst ein"
   NODE_BIN="$(command -v node)"
+
+  # Läuft KrisNote hinter einem Tunnel/Proxy (Cloudflare Tunnel, nginx, Caddy ...),
+  # muss der Server dem Proxy vertrauen, sonst sieht er nur dessen Adresse statt
+  # der echten Besucher. Reihenfolge: Umgebungsvariable > bestehender Dienst > Frage.
+  proxy_line=""
+  unit=/etc/systemd/system/krisnote.service
+  if [ -n "${TRUST_PROXY:-}" ]; then
+    proxy_line="Environment=TRUST_PROXY=${TRUST_PROXY}"
+  elif [ -f "$unit" ] && grep -q '^Environment=TRUST_PROXY=' "$unit"; then
+    proxy_line="$(grep '^Environment=TRUST_PROXY=' "$unit" | head -n 1)"
+    echo "Bestehende Einstellung übernommen: ${proxy_line#Environment=}"
+  elif [ -t 0 ]; then
+    echo
+    echo "Läuft KrisNote hinter einem Tunnel oder Proxy (z. B. Cloudflare Tunnel, nginx, Caddy)?"
+    echo "Wenn du nur im eigenen Netzwerk per http://IP:3000 zugreifst, antworte mit Nein."
+    printf 'Hinter einem Proxy/Tunnel? [j/N] '
+    read -r answer || answer=""
+    case "$answer" in
+      j|J|ja|Ja|JA|y|Y|yes|Yes) proxy_line="Environment=TRUST_PROXY=1" ;;
+    esac
+  fi
+
   cat > /etc/systemd/system/krisnote.service <<EOF
 [Unit]
 Description=KrisNote (selbst gehostete Notizen-App)
@@ -89,6 +113,7 @@ WorkingDirectory=${INSTALL_DIR}/server
 ExecStart=${NODE_BIN} server.js
 Restart=on-failure
 RestartSec=5
+${proxy_line}
 
 [Install]
 WantedBy=multi-user.target
